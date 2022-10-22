@@ -10,8 +10,9 @@ class CreateList extends StatefulWidget {
 class _CreateListState extends State<CreateList> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    return Scaffold(
+      appBar: AppBar(
+      ),
     );
   }
 }

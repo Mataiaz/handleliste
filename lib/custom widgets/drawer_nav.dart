@@ -14,7 +14,7 @@ class DrawerButtons extends StatelessWidget {
             child: IconButton(
               icon: const Icon(Icons.history),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/history');
+                Navigator.pushNamed(context, '/history');
               },
               color: Theme.of(context).secondaryHeaderColor,
             ),
@@ -26,7 +26,7 @@ class DrawerButtons extends StatelessWidget {
             child: IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/settings');
+                Navigator.pushNamed(context, '/settings');
               },
               color: Theme.of(context).secondaryHeaderColor,
             ),

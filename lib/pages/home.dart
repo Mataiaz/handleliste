@@ -12,8 +12,9 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: MyDrawer(),
-      appBar: AppBar(),
+      drawer: const MyDrawer(),
+      appBar: AppBar(
+      ),
       body: SafeArea(
         // query list will be here
         child: Container(),
