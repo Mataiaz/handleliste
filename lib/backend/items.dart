@@ -1,15 +1,16 @@
 class Item {
-  int id;
-  int antall;
-  String tittel;
+  String id;
+  String amount;
+  String title;
+  
 
-  Item({required this.id, required this.antall, required this.tittel});
+  Item({required this.id, required this.amount, required this.title});
 
   factory Item.fromJson(Map<String, dynamic> json) {
     return Item(
-      id: json['id'] as int,
-      antall: json['antall'] as int,
-      tittel: json['tittel'] as String,
+      id: json['id'] as String,
+      amount: json['amount'] as String,
+      title: json['title'] as String,
     );
   }
 }

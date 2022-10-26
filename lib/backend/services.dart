@@ -10,23 +10,6 @@ class Services {
   static const _UPDATE_EMP_ACTION = 'UPDATE_EMP';
   static const _DELETE_EMP_ACTION = 'DELETE_EMP';
 
-  // Method to create table list
-  static Future<String> createTable() async{
-    try {
-      var map = Map<String, dynamic>();
-      map['action'] = _CREATE_TABLE_ACTION;
-      final Uri url = Uri.parse(ROOT);
-      final response = await http.post(url, body: map);
-      if (200 == response.statusCode) {
-        return response.body;
-      } else {
-        return "error";
-      }
-    } catch (e) {
-      return "error";
-    }
-  }
-
   // get items
   static Future<List<Item>> getItems() async {
     try {
@@ -44,22 +27,20 @@ class Services {
       return <Item>[];
     }
   }
-
-  static List<Item> parseResponse(String responseBody) {
+  
+static List<Item> parseResponse(String responseBody) {
     final parsed = json.decode(responseBody).cast<Map<String, dynamic>>();
     return parsed.map<Item>((json) => Item.fromJson(json)).toList();
   }
-  // Add item to the list
-  static Future<String> addItem(int antall, String tittel) async {
+
+// Method to create table list
+  static Future<String> createTable() async{
     try {
       var map = Map<String, dynamic>();
-      map['action'] = _ADD_EMP_ACTION;
-      map['antall'] = antall;
-      map['tittel'] = tittel;
-      final response = await http.post(Uri.parse(ROOT), body: map);
-     print('create table response : ${response.body}');
-      if (response.statusCode == 200) {
-        List<Item> list = parseResponse(response.body);
+      map['action'] = _CREATE_TABLE_ACTION;
+      final Uri url = Uri.parse(ROOT);
+      final response = await http.post(url, body: map);
+      if (200 == response.statusCode) {
         return response.body;
       } else {
         return "error";
@@ -68,14 +49,30 @@ class Services {
       return "error";
     }
   }
+  
+  // Add item to the list
+  static Future<String> addItem(String amount, String title) async {
+    try {
+      var map = new Map<String, dynamic>();
+      map["action"] = _ADD_EMP_ACTION;
+      map["amount"] = amount;
+      map["title"] = title;
+      final Uri url = Uri.parse(ROOT);
+      final response = await http.post(url, body: map);
+      print("addEmployee >> Response:: ${response.body}");
+      return response.body;
+    } catch (e) {
+      return 'error';
+    }
+  }
 
-  static Future<String> updateItem(int empId, int antall, String tittel) async {
+  static Future<String> updateItem(int empId, int amount, String title) async {
     try {
       var map = Map<String, dynamic>();
       map['action'] = _UPDATE_EMP_ACTION;
       map['emp_id'] = empId;
-      map['antall'] = antall;
-      map['tittel'] = tittel;
+      map['amount'] = amount;
+      map['title'] = title;
       final response = await http.post(Uri.parse(ROOT), body: map);
      print('update table response : ${response.body}');
       if (response.statusCode == 200) {
@@ -89,13 +86,13 @@ class Services {
     }
   }
 
-  static Future<String> deleteItem(int empId, int antall, String tittel) async {
+  static Future<String> deleteItem(int empId, int amount, String title) async {
     try {
       var map = Map<String, dynamic>();
       map['action'] = _DELETE_EMP_ACTION;
       map['emp_id'] = empId;
-      map['antall'] = antall;
-      map['tittel'] = tittel;
+      map['amount'] = amount;
+      map['title'] = title;
       final response = await http.post(Uri.parse(ROOT), body: map);
      print('delete table response : ${response.body}');
       if (response.statusCode == 200) {
