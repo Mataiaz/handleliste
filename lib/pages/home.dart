@@ -13,12 +13,28 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const MyDrawer(),
-      appBar: AppBar(
-        
-      ),
+      appBar: AppBar(),
       body: SafeArea(
         // query list will be here
-        child: Column(),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: <Widget>[],
+              ),
+            ),
+            Center(
+              child: IconButton(
+                iconSize: 40,
+                color: Colors.blue,
+                icon: Icon(Icons.shopping_cart_rounded),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/create_list");
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

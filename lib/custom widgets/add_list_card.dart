@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AddListCard extends StatelessWidget {
-  final TextField inputTitle;
+  final TextFormField inputTitle;
   final VoidCallback functionAdd;
   final VoidCallback functionSubtract;
-  final VoidCallback functionCancel;
-  final VoidCallback functionRefresh;
+  final VoidCallback functionRedo;
   final VoidCallback functionFinish;
+  final VoidCallback functionCancel;
   final Text value;
 
   const AddListCard(
@@ -14,15 +14,16 @@ class AddListCard extends StatelessWidget {
       required this.inputTitle,
       required this.functionAdd,
       required this.functionSubtract,
-      required this.functionCancel,
-      required this.functionRefresh,
+      required this.functionRedo,
       required this.functionFinish,
+      required this.functionCancel,
       required this.value})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.blueGrey[50],
       child: Column(
         children: [
           Center(child: inputTitle),
@@ -33,16 +34,25 @@ class AddListCard extends StatelessWidget {
               value,
               IconButton(onPressed: functionAdd, icon: const Icon(Icons.add)),
               Spacer(),
+              IconButton(
+                      onPressed: functionFinish,
+                      iconSize: 30,
+                      color: Colors.green,
+                      icon: const Icon(Icons.check)),
+              
+              Spacer(),
               Row(
                 children: [
                   IconButton(
-                      onPressed: functionFinish,
-                      icon: const Icon(Icons.cancel)),
+                      onPressed: functionRedo,
+                      iconSize: 30,
+                      color: Colors.orange,
+                      icon: const Icon(Icons.redo)),
                   IconButton(
-                      onPressed: functionFinish,
-                      icon: const Icon(Icons.refresh)),
-                  IconButton(
-                      onPressed: functionFinish, icon: const Icon(Icons.check)),
+                      onPressed: functionCancel,
+                      iconSize: 30,
+                      color: Colors.red,
+                      icon: const Icon(Icons.cancel_outlined)),
                 ],
               ),
             ],

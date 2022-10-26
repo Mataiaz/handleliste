@@ -11,10 +11,11 @@ class Services {
   static const _DELETE_EMP_ACTION = 'DELETE_EMP';
 
   // get items
-  static Future<List<Item>> getItems() async {
+  static Future<List<Item>> getItems(String tName) async {
     try {
       var map = new Map<String, dynamic>();
       map['action'] = _GET_ACTION;
+      map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);
       print('create table response : ${response.body}');
@@ -35,10 +36,11 @@ static List<Item> parseResponse(String responseBody) {
   }
 
 // Method to create table list
-  static Future<String> createTable() async{
+  static Future<String> createTable(String tName) async{
     try {
       var map = Map<String, dynamic>();
       map['action'] = _CREATE_TABLE_ACTION;
+      map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);
       if (200 == response.statusCode) {
@@ -52,12 +54,13 @@ static List<Item> parseResponse(String responseBody) {
   }
   
   // Add item to the list
-  static Future<String> addItem(String amount, String title) async {
+  static Future<String> addItem(String amount, String title, String tName) async {
     try {
       var map = new Map<String, dynamic>();
       map["action"] = _ADD_EMP_ACTION;
       map["amount"] = amount;
       map["title"] = title;
+      map["tName"] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);
       print("addEmployee >> Response:: ${response.body}");
@@ -67,7 +70,7 @@ static List<Item> parseResponse(String responseBody) {
     }
   }
 
-  static Future<String> updateItem(String empId, String amount, String title) async {
+  static Future<String> updateItem(String empId, String amount, String title, String tName) async {
     try {
       var map = Map<String, dynamic>();
       map['action'] = _UPDATE_EMP_ACTION;
@@ -87,7 +90,7 @@ static List<Item> parseResponse(String responseBody) {
     }
   }
 
-  static Future<String> deleteItem(String empId, String amount, String title) async {
+  static Future<String> deleteItem(String empId, String amount, String title, String tName) async {
     try {
       var map = Map<String, dynamic>();
       map['action'] = _DELETE_EMP_ACTION;

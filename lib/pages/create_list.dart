@@ -18,6 +18,7 @@ class _CreateListState extends State<CreateList> {
   late bool _isUpdating;
   late String _titleProgress;
   late GlobalKey<ScaffoldState> _createListScaffoldKey;
+  String tName = "";
   int amount = 1;
 
   @override
@@ -28,7 +29,8 @@ class _CreateListState extends State<CreateList> {
     _titleProgress = title;
     _titleController = TextEditingController(text: null);
     _createListScaffoldKey = GlobalKey();
-    _getItems();
+    _createTable("Build");
+    _getItems("Build");
   }
 
   // Show update progress
@@ -44,9 +46,11 @@ class _CreateListState extends State<CreateList> {
     ));
   }
 
-  _createTable() {
+ 
+
+  _createTable(tName) {
     _showProgress('Creating..');
-    Services.createTable().then((result) {
+    Services.createTable(tName).then((result) {
       if ('success' == result) {
         showSnackBar(context, result);
         _showProgress(title);
@@ -56,10 +60,10 @@ class _CreateListState extends State<CreateList> {
     });
   }
 
-  _addItem() {
-    Services.addItem(amount.toString(), _titleController.text).then((result) {
+  _addItem(tName) {
+    Services.addItem(amount.toString(), _titleController.text, tName).then((result) {
       if ('success' == result) {
-        _getItems();
+        _getItems(tName);
         showSnackBar(context, result);
         _showProgress(title);
         _clearValues();
@@ -67,9 +71,9 @@ class _CreateListState extends State<CreateList> {
     });
   }
 
-  _getItems() {
+  _getItems(tName) {
     _showProgress("loading");
-    Services.getItems().then((items) {
+    Services.getItems(tName).then((items) {
       setState(() {
         _items = items;
       });
@@ -80,10 +84,10 @@ class _CreateListState extends State<CreateList> {
     setState(() {
       _isUpdating = true;
     });
-    Services.updateItem(item.id, amount.toString(), _titleController.text)
+    Services.updateItem(item.id, amount.toString(), _titleController.text, tName)
         .then((result) {
       if ('success' == result) {
-        _getItems();
+        _getItems(tName);
         setState(() {
           _isUpdating = false;
         });
@@ -94,10 +98,10 @@ class _CreateListState extends State<CreateList> {
 
   _deleteItem(Item item) {
     _showProgress('deleting');
-    Services.deleteItem(item.id, amount.toString(), _titleController.text)
+    Services.deleteItem(item.id, amount.toString(), _titleController.text, tName)
         .then((result) {
       if ('success' == result) {
-        _getItems();
+        _getItems(tName);
       }
     });
   }
@@ -137,9 +141,15 @@ class _CreateListState extends State<CreateList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.blueGrey[100],
       key: _createListScaffoldKey,
       appBar: AppBar(
-        title: Text(_titleProgress),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.blueGrey[100],
+        title: const Center(
+          child: Text("My shopping list",
+          style: TextStyle(color: Colors.black)),
+        ),
       ),
       body: Column(
         children: [
@@ -151,12 +161,12 @@ class _CreateListState extends State<CreateList> {
             ),
           ),
           SizedBox(
-              height: 140,
+              height: 105,
               child: ListView(
                 children: [
                   AddListCard(
                     value: Text(amount.toString()),
-                    inputTitle: TextField(
+                    inputTitle: TextFormField(
                       controller: _titleController,
                     ),
                     functionAdd: () {
@@ -174,18 +184,19 @@ class _CreateListState extends State<CreateList> {
                         if (_titleController.text == "") {
                           //please write something
                         } else {
-                          _addItem();
+                          _addItem("Build");
                         }
                       });
                     },
-                    functionRefresh: () {
+                    functionRedo: () {
                       setState(() {
-                        //_updateItem();
+                        _isUpdating = false;
                       });
+                      _clearValues();
                     },
                     functionCancel: () {
                       setState(() {
-                        _isUpdating = false;
+                        Navigator.pushReplacementNamed(context, "/home");
                       });
                       _clearValues();
                     },
