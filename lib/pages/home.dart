@@ -14,10 +14,11 @@ class _HomeState extends State<Home> {
     return Scaffold(
       drawer: const MyDrawer(),
       appBar: AppBar(
+        
       ),
       body: SafeArea(
         // query list will be here
-        child: Container(),
+        child: Column(),
       ),
     );
   }
