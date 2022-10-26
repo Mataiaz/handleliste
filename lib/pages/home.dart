@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:handleliste/backend/services.dart';
 import 'package:handleliste/custom widgets/home_drawer.dart';
+import 'package:handleliste/pages/create_list.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -9,6 +11,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+ @override
+  void initState() {
+    super.initState();
+    Services.createTable("Shop");
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -29,50 +29,20 @@ class _CreateListState extends State<CreateList> {
     _titleProgress = title;
     _titleController = TextEditingController(text: null);
     _createListScaffoldKey = GlobalKey();
-    _createTable("Build");
+    Services.createTable("Build");
     _getItems("Build");
-  }
-
-  // Show update progress
-  _showProgress(String message) {
-    setState(() {
-      _titleProgress = message;
-    });
-  }
-
-  showSnackBar(context, message) {
-    _createListScaffoldKey.currentState!.showSnackBar(SnackBar(
-      content: Text(message),
-    ));
-  }
-
- 
-
-  _createTable(tName) {
-    _showProgress('Creating..');
-    Services.createTable(tName).then((result) {
-      if ('success' == result) {
-        showSnackBar(context, result);
-        _showProgress(title);
-      } else {
-        showSnackBar(context, result);
-      }
-    });
   }
 
   _addItem(tName) {
     Services.addItem(amount.toString(), _titleController.text, tName).then((result) {
       if ('success' == result) {
         _getItems(tName);
-        showSnackBar(context, result);
-        _showProgress(title);
         _clearValues();
       }
     });
   }
 
   _getItems(tName) {
-    _showProgress("loading");
     Services.getItems(tName).then((items) {
       setState(() {
         _items = items;
@@ -97,7 +67,6 @@ class _CreateListState extends State<CreateList> {
   }
 
   _deleteItem(Item item) {
-    _showProgress('deleting');
     Services.deleteItem(item.id, amount.toString(), _titleController.text, tName)
         .then((result) {
       if ('success' == result) {
@@ -166,8 +135,16 @@ class _CreateListState extends State<CreateList> {
                 children: [
                   AddListCard(
                     value: Text(amount.toString()),
-                    inputTitle: TextFormField(
+                    child: Focus(child: TextField(
                       controller: _titleController,
+                    ),
+                    onFocusChange: (hasFocus) {
+                      if (_titleController.text == "") {
+                          //please write something
+                        } else {
+                          _addItem("Build");
+                        }
+                    },
                     ),
                     functionAdd: () {
                       setState(() {
