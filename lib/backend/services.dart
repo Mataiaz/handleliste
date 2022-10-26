@@ -5,7 +5,7 @@ import 'items.dart';
 class Services {
   static const ROOT = 'http://10.0.2.2/handlelisteDB/db.php';
   static const _CREATE_TABLE_ACTION = 'CREATE_TABLE';
-  static const _GET_ALL_ACTION = 'GET_ALL';
+  static const _GET_ACTION = 'GET_ALL';
   static const _ADD_EMP_ACTION = 'ADD_EMP';
   static const _UPDATE_EMP_ACTION = 'UPDATE_EMP';
   static const _DELETE_EMP_ACTION = 'DELETE_EMP';
@@ -13,9 +13,10 @@ class Services {
   // get items
   static Future<List<Item>> getItems() async {
     try {
-      var map = Map<String, dynamic>();
-      map['action'] = _GET_ALL_ACTION;
-      final response = await http.post(Uri.parse(ROOT), body: map);
+      var map = new Map<String, dynamic>();
+      map['action'] = _GET_ACTION;
+      final Uri url = Uri.parse(ROOT);
+      final response = await http.post(url, body: map);
       print('create table response : ${response.body}');
       if (response.statusCode == 200) {
         List<Item> list = parseResponse(response.body);
@@ -66,7 +67,7 @@ static List<Item> parseResponse(String responseBody) {
     }
   }
 
-  static Future<String> updateItem(int empId, int amount, String title) async {
+  static Future<String> updateItem(String empId, String amount, String title) async {
     try {
       var map = Map<String, dynamic>();
       map['action'] = _UPDATE_EMP_ACTION;
@@ -86,7 +87,7 @@ static List<Item> parseResponse(String responseBody) {
     }
   }
 
-  static Future<String> deleteItem(int empId, int amount, String title) async {
+  static Future<String> deleteItem(String empId, String amount, String title) async {
     try {
       var map = Map<String, dynamic>();
       map['action'] = _DELETE_EMP_ACTION;

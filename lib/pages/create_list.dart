@@ -20,6 +20,7 @@ class _CreateListState extends State<CreateList> {
   late GlobalKey<ScaffoldState> _createListScaffoldKey;
   int amount = 1;
 
+  @override
   void initState() {
     super.initState();
     _items = [];
@@ -27,6 +28,7 @@ class _CreateListState extends State<CreateList> {
     _titleProgress = title;
     _titleController = TextEditingController(text: null);
     _createListScaffoldKey = GlobalKey();
+    _getItems();
   }
 
   // Show update progress
@@ -57,6 +59,7 @@ class _CreateListState extends State<CreateList> {
   _addItem() {
     Services.addItem(amount.toString(), _titleController.text).then((result) {
       if ('success' == result) {
+        _getItems();
         showSnackBar(context, result);
         _showProgress(title);
         _clearValues();
@@ -64,15 +67,39 @@ class _CreateListState extends State<CreateList> {
     });
   }
 
-  _getItem() {
-    //
-  }
-  _updateItem() {
-    //
+  _getItems() {
+    _showProgress("loading");
+    Services.getItems().then((items) {
+      setState(() {
+        _items = items;
+      });
+    });
   }
 
-  _deleteItem() {
-    //
+  _updateItem(Item item) {
+    setState(() {
+      _isUpdating = true;
+    });
+    Services.updateItem(item.id, amount.toString(), _titleController.text)
+        .then((result) {
+      if ('success' == result) {
+        _getItems();
+        setState(() {
+          _isUpdating = false;
+        });
+        _clearValues();
+      }
+    });
+  }
+
+  _deleteItem(Item item) {
+    _showProgress('deleting');
+    Services.deleteItem(item.id, amount.toString(), _titleController.text)
+        .then((result) {
+      if ('success' == result) {
+        _getItems();
+      }
+    });
   }
 
   //Clear text
@@ -81,78 +108,91 @@ class _CreateListState extends State<CreateList> {
     amount = 1;
   }
 
+  SingleChildScrollView _data() {
+    return SingleChildScrollView(
+      scrollDirection: Axis.vertical,
+      child: FittedBox(
+        child: DataTable(
+          columns: const [
+            DataColumn(
+              label: Text('Items'),
+            ),
+            DataColumn(
+              label: Text('Amount'),
+            ),
+          ],
+          rows: _items
+              .map(
+                (item) => DataRow(cells: [
+                  DataCell(Text(item.title.toUpperCase())),
+                  DataCell(Center(child: Text(item.amount.toUpperCase())))
+                ]),
+              )
+              .toList(),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _createListScaffoldKey,
       appBar: AppBar(
         title: Text(_titleProgress),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              _createTable();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              _getItem();
-            },
-          ),
-        ],
       ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            AddListCard(
-              value: Text(amount.toString()),
-              inputTitle: TextField(
-                controller: _titleController,
-              ),
-              functionAdd: () {
-                setState(() {
-                  if(amount < 99)
-                  amount++;
-                });
-              },
-              functionSubtract: () {
-                setState(() {
-                  if(amount > 1)
-                  amount--;
-                });
-              },
-              functionFinish: () {
-                setState(() {
-                  if(_titleController.text == "") {
-                    //please write something
-                  }
-                  else {
-                    _addItem();
-                  }
-                });
-              },
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: <Widget>[
+                _data(),
+              ],
             ),
-            Row(
-              children: [
-                IconButton(
-                    onPressed: () {
-                      _updateItem();
+          ),
+          SizedBox(
+              height: 140,
+              child: ListView(
+                children: [
+                  AddListCard(
+                    value: Text(amount.toString()),
+                    inputTitle: TextField(
+                      controller: _titleController,
+                    ),
+                    functionAdd: () {
+                      setState(() {
+                        if (amount < 99) amount++;
+                      });
                     },
-                    icon: const Icon(Icons.update)),
-                IconButton(
-                    onPressed: () {
+                    functionSubtract: () {
+                      setState(() {
+                        if (amount > 1) amount--;
+                      });
+                    },
+                    functionFinish: () {
+                      setState(() {
+                        if (_titleController.text == "") {
+                          //please write something
+                        } else {
+                          _addItem();
+                        }
+                      });
+                    },
+                    functionRefresh: () {
+                      setState(() {
+                        //_updateItem();
+                      });
+                    },
+                    functionCancel: () {
                       setState(() {
                         _isUpdating = false;
                       });
                       _clearValues();
                     },
-                    icon: const Icon(Icons.cancel)),
-              ],
-            ),
-          ],
-        ),
+                  ),
+                ],
+              ))
+        ],
       ),
     );
   }
