@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:handleliste/backend/items.dart';
 import 'package:handleliste/backend/services.dart';
 import 'package:handleliste/custom%20widgets/add_list_card.dart';
+import 'package:handleliste/custom widgets/data_table.dart';
 
 class CreateList extends StatefulWidget {
   const CreateList({Key? key}) : super(key: key);
@@ -34,7 +35,8 @@ class _CreateListState extends State<CreateList> {
   }
 
   _addItem(tName) {
-    Services.addItem(amount.toString(), _titleController.text, tName).then((result) {
+    Services.addItem(amount.toString(), _titleController.text, tName)
+        .then((result) {
       if ('success' == result) {
         _getItems(tName);
         _clearValues();
@@ -54,7 +56,8 @@ class _CreateListState extends State<CreateList> {
     setState(() {
       _isUpdating = true;
     });
-    Services.updateItem(item.id, amount.toString(), _titleController.text, tName)
+    Services.updateItem(
+            item.id, amount.toString(), _titleController.text, tName)
         .then((result) {
       if ('success' == result) {
         _getItems(tName);
@@ -67,7 +70,8 @@ class _CreateListState extends State<CreateList> {
   }
 
   _deleteItem(Item item) {
-    Services.deleteItem(item.id, amount.toString(), _titleController.text, tName)
+    Services.deleteItem(
+            item.id, amount.toString(), _titleController.text, tName)
         .then((result) {
       if ('success' == result) {
         _getItems(tName);
@@ -81,29 +85,18 @@ class _CreateListState extends State<CreateList> {
     amount = 1;
   }
 
-  SingleChildScrollView _data() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: FittedBox(
-        child: DataTable(
-          columns: const [
-            DataColumn(
-              label: Text('Items'),
-            ),
-            DataColumn(
-              label: Text('Amount'),
-            ),
-          ],
-          rows: _items
-              .map(
-                (item) => DataRow(cells: [
-                  DataCell(Text(item.title.toUpperCase())),
-                  DataCell(Center(child: Text(item.amount.toUpperCase())))
-                ]),
-              )
-              .toList(),
-        ),
-      ),
+  QDataTable _data() {
+    return QDataTable(
+      label1: Text('Items'),
+      label2: Text('Amount'),
+      list: _items
+          .map(
+            (item) => DataRow(cells: [
+              DataCell(Text(item.title.toUpperCase())),
+              DataCell(Center(child: Text(item.amount.toUpperCase())))
+            ]),
+          )
+          .toList(),
     );
   }
 
@@ -116,8 +109,8 @@ class _CreateListState extends State<CreateList> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.blueGrey[100],
         title: const Center(
-          child: Text("My shopping list",
-          style: TextStyle(color: Colors.black)),
+          child:
+              Text("My shopping list", style: TextStyle(color: Colors.black)),
         ),
       ),
       body: Column(
@@ -135,16 +128,17 @@ class _CreateListState extends State<CreateList> {
                 children: [
                   AddListCard(
                     value: Text(amount.toString()),
-                    child: Focus(child: TextField(
-                      controller: _titleController,
-                    ),
-                    onFocusChange: (hasFocus) {
-                      if (_titleController.text == "") {
+                    child: Focus(
+                      child: TextField(
+                        controller: _titleController,
+                      ),
+                      onFocusChange: (hasFocus) {
+                        if (_titleController.text == "") {
                           //please write something
                         } else {
                           _addItem("Build");
                         }
-                    },
+                      },
                     ),
                     functionAdd: () {
                       setState(() {
