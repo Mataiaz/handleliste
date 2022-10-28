@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:handleliste/backend/services.dart';
 import 'package:handleliste/custom widgets/home_drawer.dart';
 import 'package:handleliste/custom%20widgets/data_table.dart';
-import 'package:handleliste/pages/create_list.dart';
 import 'package:handleliste/backend/items.dart';
 
 class Home extends StatefulWidget {
@@ -15,6 +14,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   late List<Item> _items;
   late Item _selectedItem;
+  bool pressed = false;
   String _status = "No list";
   @override
   void initState() {
@@ -52,17 +52,14 @@ class _HomeState extends State<Home> {
     });
   }
 
-  _deleteItem(Item item) {
-    Services.deleteItem(item.id, "Shop").then((result) {
-      if ('success' == result) {
-        _completeItems("Shop");
-      }
-    });
+  _deleteItem(Item item) async {
+    await Services.deleteItem(item.id, "Shop");
+    pressed = false;
+    _completeItems("Shop");
   }
 
   _addItem(Item item, tName) {
     Services.addItem(item.amount, item.title, tName);
-    _deleteItem(item);
   }
 
   QDataTable _data() {
@@ -86,10 +83,14 @@ class _HomeState extends State<Home> {
                       style: TextStyle(fontSize: 14),
                     ),
                     IconButton(
-                        icon: Icon(Icons.check_circle_outline_outlined, color: Colors.green),
-                        onPressed: () {
-                          _addItem(item, "History");
-                          _getItems("Shop");
+                        icon: Icon(Icons.check_circle_outline_outlined,
+                            color: Colors.green),
+                        onPressed: () async {
+                          if (pressed == false) {
+                            pressed = true;
+                            await _addItem(item, "History");
+                            await _deleteItem(item);
+                          }
                         }),
                   ],
                 ),

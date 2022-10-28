@@ -15,12 +15,11 @@ class Services {
   // get items
   static Future<List<Item>> getItems(String tName) async {
     try {
-      var map = new Map<String, dynamic>();
+      var map = <String, dynamic>{};
       map['action'] = _GET_ACTION;
       map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);
-      print('create table response : ${response.body}');
       if (response.statusCode == 200) {
         List<Item> list = parseResponse(response.body);
         return list;
@@ -37,10 +36,10 @@ static List<Item> parseResponse(String responseBody) {
     return parsed.map<Item>((json) => Item.fromJson(json)).toList();
   }
 
-// Method to create table list
+// Method to create a table
   static Future<String> createTable(String tName) async{
     try {
-      var map = Map<String, dynamic>();
+      var map = <String, dynamic>{};
       map['action'] = _CREATE_TABLE_ACTION;
       map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
@@ -55,10 +54,10 @@ static List<Item> parseResponse(String responseBody) {
     }
   }
 
-  // Method to create table list
+  // Method to replace table content with another's
   static Future<String> replaceTable(String tName) async{
     try {
-      var map = Map<String, dynamic>();
+      var map = <String, dynamic>{};
       map['action'] = _REPLACE_ALL_ITEMS_ACTION;
       map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
@@ -73,26 +72,26 @@ static List<Item> parseResponse(String responseBody) {
     }
   }
 
-  // Add item to the list
+  // Method to Add values to the table
   static Future<String> addItem(String amount, String title, String tName) async {
     try {
-      var map = new Map<String, dynamic>();
+      var map = <String, dynamic>{};
       map["action"] = _ADD_EMP_ACTION;
       map["amount"] = amount;
       map["title"] = title;
       map["tName"] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);
-      print("addEmployee >> Response:: ${response.body}");
       return response.body;
     } catch (e) {
       return 'error';
     }
   }
 
+  // Method to Update values inside table
   static Future<String> updateItem(String empId, String amount, String title, String tName) async {
     try {
-      var map = Map<String, dynamic>();
+      var map = <String, dynamic>{};
       map['action'] = _UPDATE_EMP_ACTION;
       map['emp_id'] = empId;
       map['amount'] = amount;
@@ -100,36 +99,35 @@ static List<Item> parseResponse(String responseBody) {
       map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);
-     print('update table response : ${response.body}');
         return response.body;
     } catch (e) {
       return "error";
     }
   }
 
+  //Method to delete value inside table
   static Future<String> deleteItem(String empId, String tName) async {
     try {
-      var map = Map<String, dynamic>();
+      var map = <String, dynamic>{};
       map['action'] = _DELETE_EMP_ACTION;
       map['emp_id'] = empId;
       map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);
-     print('delete table response : ${response.body}');
       return response.body;
     } catch (e) {
       return "error";
     }
   }
 
+  // Method to delete all values inside table
   static Future<String> deleteAllItems(String tName) async {
     try {
-      var map = Map<String, dynamic>();
+      var map = <String, dynamic>{};
       map['action'] = _DELETE_ALL_EMP_ACTION;
       map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);
-     print('delete table response : ${response.body}');
       return response.body;
     } catch (e) {
       return "error";

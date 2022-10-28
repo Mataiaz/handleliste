@@ -110,15 +110,15 @@ class _CreateListState extends State<CreateList> {
                         item.title.toUpperCase(),
                         textDirection: TextDirection.rtl,
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Text(
                         "                    " +
                             item.amount.toUpperCase() +
                             "stk",
-                        style: TextStyle(fontSize: 14),
+                        style: const TextStyle(fontSize: 14),
                       ),
                       IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           onPressed: () {
                             _deleteItem(item);
                             _getItems("Build");
@@ -171,8 +171,8 @@ class _CreateListState extends State<CreateList> {
                       ),
                       onFocusChange: (hasFocus) {
                         if (_titleController.text.isEmpty) {
-                          print("Need item");
-                        } else if (!_titleController.text.isEmpty &&
+                          //print("Need item");
+                        } else if (_titleController.text.isNotEmpty &&
                             _isUpdating == false) {
                           _addItem("Build");
                           _getItems("Build");
@@ -194,13 +194,13 @@ class _CreateListState extends State<CreateList> {
                     },
                     functionFinish: () {
                       Services.getItems("Build").then((items) => {
-                            if (items.length > 0)
+                            if (items.isNotEmpty)
                               {
                                 _replaceTable("Build"),
                               }
                             else
                               {
-                                print("Nothing inside table"),
+                                //print("Nothing inside table"),
                               }
                           });
                     },

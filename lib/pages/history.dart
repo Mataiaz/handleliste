@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:handleliste/backend/services.dart';
-import 'package:handleliste/custom widgets/home_drawer.dart';
 import 'package:handleliste/custom%20widgets/data_table.dart';
-import 'package:handleliste/pages/create_list.dart';
 import 'package:handleliste/backend/items.dart';
 
 
@@ -15,8 +13,8 @@ class History extends StatefulWidget {
 
 class _HistoryState extends State<History> {
   late List<Item> _items;
-  late Item _selectedItem;
   String _status = "No list";
+  bool pressed = false;
   @override
   void initState() {
     super.initState();
@@ -43,24 +41,18 @@ class _HistoryState extends State<History> {
   }
 
   _deleteItem(Item item) {
-    Services.deleteItem(item.id, "History").then((result) {
-      if ('success' == result) {
-        _getItems("History");
-      }
-    });
+    Services.deleteItem(item.id, "History");
+      pressed = false;
+      _getItems("History");
   }
 
   _deleteAllItems(tName) {
-    Services.deleteAllItems(tName).then((result){
-      if ('success' == result) {
-        _getItems("History");
-      }
-    });
+    Services.deleteAllItems(tName);
+      _getItems("History");
   }
 
   _addItem(Item item, tName) {
     Services.addItem(item.amount, item.title, tName);
-      _deleteItem(item);
   }
 
   QDataTable _data() {
@@ -84,9 +76,12 @@ class _HistoryState extends State<History> {
                           "stk",
                       style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red),
                     ),
-                    MaterialButton(onPressed: () {
-                      _addItem(item, "Shop");
-                      _getItems("History");
+                    MaterialButton(onPressed: () async {
+                      if (pressed == false) {
+                            pressed = true;
+                            await _addItem(item, "Shop");
+                            await _deleteItem(item);
+                          }
                     }, child: Text("Restore")),
                   ],
                 ),
@@ -118,8 +113,8 @@ class _HistoryState extends State<History> {
               ),
             ),
             Center(
-              child: IconButton(onPressed: () {
-                _deleteAllItems("History");
+              child: IconButton(onPressed: () async {
+                await _deleteAllItems("History");
                 _getItems("History");
               }, icon: const Icon(Icons.dangerous), iconSize: 40, color: Colors.red),
             ),
