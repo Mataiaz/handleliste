@@ -45,16 +45,15 @@ class _CreateListState extends State<CreateList> {
 
   _getItems(tName) {
     Services.getItems(tName).then((items) {
-      if(items.isNotEmpty)
-      {
+      if (items.isNotEmpty) {
         _status = "";
-      }
-      else {
+      } else {
         _status = "So empty..";
       }
       setState(() {
         _items = items;
       });
+      _clearValues();
     });
   }
 
@@ -76,13 +75,7 @@ class _CreateListState extends State<CreateList> {
   }
 
   _deleteItem(Item item) {
-    Services.deleteItem(
-            item.id, "Build")
-        .then((result) {
-      if ('success' == result) {
-        _getItems("Build");
-      }
-    });
+    Services.deleteItem(item.id, "Build");
   }
 
   _replaceTable(tName) {
@@ -119,15 +112,16 @@ class _CreateListState extends State<CreateList> {
                       ),
                       Spacer(),
                       Text(
-                        "                    "+
+                        "                    " +
                             item.amount.toUpperCase() +
-                            "stk", style: TextStyle(fontSize: 14)
-                            ,
+                            "stk",
+                        style: TextStyle(fontSize: 14),
                       ),
                       IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () {
                             _deleteItem(item);
+                            _getItems("Build");
                           }),
                     ],
                   ), onTap: () {
@@ -181,8 +175,10 @@ class _CreateListState extends State<CreateList> {
                         } else if (!_titleController.text.isEmpty &&
                             _isUpdating == false) {
                           _addItem("Build");
+                          _getItems("Build");
                         } else {
                           _updateItem(_selectedItem, "Build");
+                          _getItems("Build");
                         }
                       },
                     ),

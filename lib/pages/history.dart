@@ -59,13 +59,8 @@ class _HistoryState extends State<History> {
   }
 
   _addItem(Item item, tName) {
-    Services.addItem(item.amount, item.title, tName)
-        .then((result) {
+    Services.addItem(item.amount, item.title, tName);
       _deleteItem(item);
-      if ('success' == result) {
-        _getItems("History");
-      }
-    });
   }
 
   QDataTable _data() {
@@ -91,6 +86,7 @@ class _HistoryState extends State<History> {
                     ),
                     MaterialButton(onPressed: () {
                       _addItem(item, "Shop");
+                      _getItems("History");
                     }, child: Text("Restore")),
                   ],
                 ),

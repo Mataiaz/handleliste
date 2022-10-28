@@ -61,13 +61,8 @@ class _HomeState extends State<Home> {
   }
 
   _addItem(Item item, tName) {
-    Services.addItem(item.amount, item.title, tName)
-        .then((result) {
-      if ('success' == result) {
-        _deleteItem(item);
-        _getItems("Shop");
-      }
-    });
+    Services.addItem(item.amount, item.title, tName);
+    _deleteItem(item);
   }
 
   QDataTable _data() {
@@ -94,6 +89,7 @@ class _HomeState extends State<Home> {
                         icon: Icon(Icons.check_circle_outline_outlined, color: Colors.green),
                         onPressed: () {
                           _addItem(item, "History");
+                          _getItems("Shop");
                         }),
                   ],
                 ),
@@ -124,7 +120,7 @@ class _HomeState extends State<Home> {
               child: IconButton(
                 iconSize: 40,
                 color: Colors.blue,
-                icon: Icon(Icons.shopping_cart_rounded),
+                icon: const Icon(Icons.shopping_cart_rounded),
                 onPressed: () {
                   Navigator.pushNamed(context, "/create_list");
                 },
