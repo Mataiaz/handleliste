@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:handleliste/backend/services.dart';
 import 'package:handleliste/custom widgets/home_drawer.dart';
+import 'package:handleliste/custom%20widgets/data_table.dart';
 import 'package:handleliste/pages/create_list.dart';
+import 'package:handleliste/backend/items.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -11,13 +13,97 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
- @override
+  late List<Item> _items;
+  late Item _selectedItem;
+  String _status = "No list";
+  @override
   void initState() {
     super.initState();
+    _items = [];
+    super.initState();
     Services.createTable("Shop");
+    Services.createTable("History");
+    _getItems("Shop");
   }
-  
+
+  _getItems(tName) {
+    Services.getItems(tName).then((items) {
+      if (items.isNotEmpty) {
+        _status = "";
+      } else {
+        _status = "No list";
+      }
+      setState(() {
+        _items = items;
+      });
+    });
+  }
+
+  _completeItems(tName) {
+    Services.getItems(tName).then((items) {
+      if (items.isNotEmpty) {
+        _status = "";
+      } else {
+        _status = "Complete";
+      }
+      setState(() {
+        _items = items;
+      });
+    });
+  }
+
+  _deleteItem(Item item) {
+    Services.deleteItem(item.id, "Shop").then((result) {
+      if ('success' == result) {
+        _completeItems("Shop");
+      }
+    });
+  }
+
+  _addItem(Item item, tName) {
+    Services.addItem(item.amount, item.title, tName)
+        .then((result) {
+      if ('success' == result) {
+        _deleteItem(item);
+        _getItems("Shop");
+      }
+    });
+  }
+
+  QDataTable _data() {
+    return QDataTable(
+      label1: Text(_status),
+      list: _items
+          .map(
+            (item) => DataRow(cells: [
+              DataCell(
+                Row(
+                  children: [
+                    Text(
+                      item.title.toUpperCase(),
+                      textDirection: TextDirection.rtl,
+                    ),
+                    Spacer(),
+                    Text(
+                      "                    " +
+                          item.amount.toUpperCase() +
+                          "stk",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    IconButton(
+                        icon: Icon(Icons.check_circle_outline_outlined, color: Colors.green),
+                        onPressed: () {
+                          _addItem(item, "History");
+                        }),
+                  ],
+                ),
+              ),
+            ]),
+          )
+          .toList(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +115,9 @@ class _HomeState extends State<Home> {
           children: [
             Expanded(
               child: ListView(
-                children: <Widget>[],
+                children: <Widget>[
+                  _data(),
+                ],
               ),
             ),
             Center(

@@ -17,7 +17,7 @@ class _CreateListState extends State<CreateList> {
   late TextEditingController _titleController;
   late Item _selectedItem;
   late bool _isUpdating;
-  late String _titleProgress;
+  String _status = "So empty..";
   late GlobalKey<ScaffoldState> _createListScaffoldKey;
   String tName = "";
   int amount = 1;
@@ -27,7 +27,6 @@ class _CreateListState extends State<CreateList> {
     super.initState();
     _items = [];
     _isUpdating = false;
-    _titleProgress = title;
     _titleController = TextEditingController(text: null);
     _createListScaffoldKey = GlobalKey();
     Services.createTable("Build");
@@ -46,13 +45,20 @@ class _CreateListState extends State<CreateList> {
 
   _getItems(tName) {
     Services.getItems(tName).then((items) {
+      if(items.isNotEmpty)
+      {
+        _status = "";
+      }
+      else {
+        _status = "So empty..";
+      }
       setState(() {
         _items = items;
       });
     });
   }
 
-  _updateItem(Item item) {
+  _updateItem(Item item, tName) {
     setState(() {
       _isUpdating = true;
     });
@@ -71,12 +77,17 @@ class _CreateListState extends State<CreateList> {
 
   _deleteItem(Item item) {
     Services.deleteItem(
-            item.id, amount.toString(), _titleController.text, tName)
+            item.id, "Build")
         .then((result) {
       if ('success' == result) {
-        _getItems(tName);
+        _getItems("Build");
       }
     });
+  }
+
+  _replaceTable(tName) {
+    Services.replaceTable(tName)
+        .then((value) => {Navigator.pushReplacementNamed(context, "/home")});
   }
 
   //Clear text
@@ -85,15 +96,47 @@ class _CreateListState extends State<CreateList> {
     amount = 1;
   }
 
+  //Clear text
+  _showValues(Item item) {
+    setState(() {
+      _titleController.text = item.title;
+      amount = int.parse(item.amount);
+    });
+  }
+
   QDataTable _data() {
     return QDataTable(
-      label1: Text('Items'),
-      label2: Text('Amount'),
+      label1: Text(_status),
       list: _items
           .map(
             (item) => DataRow(cells: [
-              DataCell(Text(item.title.toUpperCase())),
-              DataCell(Center(child: Text(item.amount.toUpperCase())))
+              DataCell(
+                  Row(
+                    children: [
+                      Text(
+                        item.title.toUpperCase(),
+                        textDirection: TextDirection.rtl,
+                      ),
+                      Spacer(),
+                      Text(
+                        "                    "+
+                            item.amount.toUpperCase() +
+                            "stk", style: TextStyle(fontSize: 14)
+                            ,
+                      ),
+                      IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            _deleteItem(item);
+                          }),
+                    ],
+                  ), onTap: () {
+                _showValues(item);
+                _selectedItem = item;
+                setState(() {
+                  _isUpdating = true;
+                });
+              }),
             ]),
           )
           .toList(),
@@ -133,10 +176,13 @@ class _CreateListState extends State<CreateList> {
                         controller: _titleController,
                       ),
                       onFocusChange: (hasFocus) {
-                        if (_titleController.text == "") {
-                          //please write something
-                        } else {
+                        if (_titleController.text.isEmpty) {
+                          print("s");
+                        } else if (!_titleController.text.isEmpty &&
+                            _isUpdating == false) {
                           _addItem("Build");
+                        } else {
+                          _updateItem(_selectedItem, "Build");
                         }
                       },
                     ),
@@ -151,25 +197,26 @@ class _CreateListState extends State<CreateList> {
                       });
                     },
                     functionFinish: () {
-                      setState(() {
-                        if (_titleController.text == "") {
-                          //please write something
-                        } else {
-                          _addItem("Build");
-                        }
-                      });
+                      Services.getItems("Build").then((items) => {
+                            if (items.length > 0)
+                              {
+                                _replaceTable("Build"),
+                              }
+                            else
+                              {
+                                print("Nothing inside table"),
+                              }
+                          });
                     },
                     functionRedo: () {
                       setState(() {
-                        _isUpdating = false;
+                        _clearValues();
                       });
-                      _clearValues();
                     },
                     functionCancel: () {
                       setState(() {
-                        Navigator.pushReplacementNamed(context, "/home");
+                        Navigator.pop(context);
                       });
-                      _clearValues();
                     },
                   ),
                 ],
