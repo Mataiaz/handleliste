@@ -12,6 +12,10 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: 
+          IconButton(onPressed: () {
+          Navigator.pushReplacementNamed(context, "/home");
+        }, icon: const Icon(Icons.arrow_back)),
       ),
     );
   }

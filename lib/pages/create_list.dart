@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:handleliste/backend/items.dart';
 import 'package:handleliste/backend/services.dart';
-import 'package:flutter/foundation.dart';
-
+import 'package:handleliste/custom%20widgets/add_list_card.dart';
+import 'package:handleliste/custom widgets/data_table.dart';
 
 class CreateList extends StatefulWidget {
   const CreateList({Key? key}) : super(key: key);
@@ -15,125 +15,213 @@ class _CreateListState extends State<CreateList> {
   final String title = 'Flutter Data Table';
   late List<Item> _items;
   late TextEditingController _titleController;
-  late TextEditingController _numberController;
   late Item _selectedItem;
   late bool _isUpdating;
-  late String _titleProgress;
-  late GlobalKey<ScaffoldState> _scaffoldKey;
-  
+  String _status = "So empty..";
+  late GlobalKey<ScaffoldState> _createListScaffoldKey;
+  String tName = "";
+  int amount = 1;
+
+  @override
   void initState() {
     super.initState();
     _items = [];
     _isUpdating = false;
-    _titleProgress = title;
     _titleController = TextEditingController(text: null);
-    _numberController = TextEditingController(text: null);
-    _scaffoldKey = GlobalKey();
+    _createListScaffoldKey = GlobalKey();
+    Services.createTable("Build");
+    _getItems("Build");
   }
 
-  // Show update progress
-  _showProgress(String message) {
-    setState(() {
-      _titleProgress = message;
+  _addItem(tName) {
+    Services.addItem(amount.toString(), _titleController.text, tName)
+        .then((result) {
+      if ('success' == result) {
+        _getItems(tName);
+        _clearValues();
+      }
     });
   }
 
-  showSnackBar(context, message) {
-    _scaffoldKey.currentState!.showSnackBar(SnackBar(
-      content: Text(message),
-    ));
-  }
-  _createTable() {
-    _showProgress('Creating..');
-    Services.createTable().then((result) {
-      if('success' == result) {
-        showSnackBar(context, result);
-        _showProgress(title);
+  _getItems(tName) {
+    Services.getItems(tName).then((items) {
+      if(items.isNotEmpty)
+      {
+        _status = "";
       }
       else {
-        showSnackBar(context, result);
+        _status = "So empty..";
+      }
+      setState(() {
+        _items = items;
+      });
+    });
+  }
+
+  _updateItem(Item item, tName) {
+    setState(() {
+      _isUpdating = true;
+    });
+    Services.updateItem(
+            item.id, amount.toString(), _titleController.text, tName)
+        .then((result) {
+      if ('success' == result) {
+        _getItems(tName);
+        setState(() {
+          _isUpdating = false;
+        });
+        _clearValues();
       }
     });
   }
 
-  _addItem() {
-    //
+  _deleteItem(Item item) {
+    Services.deleteItem(
+            item.id, "Build")
+        .then((result) {
+      if ('success' == result) {
+        _getItems("Build");
+      }
+    });
   }
 
-  _getItem() {
-    //
-  }
-  _updateItem() {
-    //
-  }
-
-  _deleteItem() {
-    //
+  _replaceTable(tName) {
+    Services.replaceTable(tName)
+        .then((value) => {Navigator.pushReplacementNamed(context, "/home")});
   }
 
   //Clear text
   _clearValues() {
     _titleController.text = "";
-    _numberController.text = "";
+    amount = 1;
+  }
+
+  //Clear text
+  _showValues(Item item) {
+    setState(() {
+      _titleController.text = item.title;
+      amount = int.parse(item.amount);
+    });
+  }
+
+  QDataTable _data() {
+    return QDataTable(
+      label1: Text(_status),
+      list: _items
+          .map(
+            (item) => DataRow(cells: [
+              DataCell(
+                  Row(
+                    children: [
+                      Text(
+                        item.title.toUpperCase(),
+                        textDirection: TextDirection.rtl,
+                      ),
+                      Spacer(),
+                      Text(
+                        "                    "+
+                            item.amount.toUpperCase() +
+                            "stk", style: TextStyle(fontSize: 14)
+                            ,
+                      ),
+                      IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            _deleteItem(item);
+                          }),
+                    ],
+                  ), onTap: () {
+                _showValues(item);
+                _selectedItem = item;
+                setState(() {
+                  _isUpdating = true;
+                });
+              }),
+            ]),
+          )
+          .toList(),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
+      backgroundColor: Colors.blueGrey[100],
+      key: _createListScaffoldKey,
       appBar: AppBar(
-        title: Text(_titleProgress),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              _createTable();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              _getItem();
-            },
-          ),
-        ],
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.blueGrey[100],
+        title: const Center(
+          child:
+              Text("My shopping list", style: TextStyle(color: Colors.black)),
+        ),
       ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                controller: _titleController,
-                decoration: const InputDecoration.collapsed(
-                    hintText: 'write what to buy. e.g milk, bread, paper'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                controller: _numberController,
-                decoration: const InputDecoration.collapsed(hintText: 'what amount'),
-              ),
-            ),
-            Row(
-              children: [
-                IconButton(
-                    onPressed: () {
-                      _updateItem();
-                    },
-                    icon: const Icon(Icons.update)),
-                IconButton(onPressed: () {
-                  setState(() {
-                    _isUpdating = false;
-                  });
-                  _clearValues();
-                }, icon: const Icon(Icons.cancel)),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: <Widget>[
+                _data(),
               ],
             ),
-          ],
-        ),
+          ),
+          SizedBox(
+              height: 105,
+              child: ListView(
+                children: [
+                  AddListCard(
+                    value: Text(amount.toString()),
+                    child: Focus(
+                      child: TextField(
+                        controller: _titleController,
+                      ),
+                      onFocusChange: (hasFocus) {
+                        if (_titleController.text.isEmpty) {
+                          print("Need item");
+                        } else if (!_titleController.text.isEmpty &&
+                            _isUpdating == false) {
+                          _addItem("Build");
+                        } else {
+                          _updateItem(_selectedItem, "Build");
+                        }
+                      },
+                    ),
+                    functionAdd: () {
+                      setState(() {
+                        if (amount < 99) amount++;
+                      });
+                    },
+                    functionSubtract: () {
+                      setState(() {
+                        if (amount > 1) amount--;
+                      });
+                    },
+                    functionFinish: () {
+                      Services.getItems("Build").then((items) => {
+                            if (items.length > 0)
+                              {
+                                _replaceTable("Build"),
+                              }
+                            else
+                              {
+                                print("Nothing inside table"),
+                              }
+                          });
+                    },
+                    functionRedo: () {
+                      setState(() {
+                        _clearValues();
+                      });
+                    },
+                    functionCancel: () {
+                      setState(() {
+                        Navigator.pop(context);
+                      });
+                    },
+                  ),
+                ],
+              ))
+        ],
       ),
     );
   }

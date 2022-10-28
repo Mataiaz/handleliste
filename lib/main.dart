@@ -6,7 +6,7 @@ import 'package:handleliste/pages/settings.dart';
 
 //Here we set the navigation routes for each page
 void main() => runApp(MaterialApp(
-  home: const CreateList(),
+  home: const Home(),
   routes: {
     '/home': (context) => const Home(),
     '/create_list': (context) => const CreateList(),
