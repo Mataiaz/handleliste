@@ -177,7 +177,7 @@ class _CreateListState extends State<CreateList> {
                       ),
                       onFocusChange: (hasFocus) {
                         if (_titleController.text.isEmpty) {
-                          print("s");
+                          print("Need item");
                         } else if (!_titleController.text.isEmpty &&
                             _isUpdating == false) {
                           _addItem("Build");

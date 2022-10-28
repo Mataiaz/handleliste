@@ -9,8 +9,8 @@ class Services {
   static const _ADD_EMP_ACTION = 'ADD_EMP';
   static const _UPDATE_EMP_ACTION = 'UPDATE_EMP';
   static const _DELETE_EMP_ACTION = 'DELETE_EMP';
-  static const _REPLACE_ALL_HOME_ACTION = 'REPLACE_ALL_HOME';
-  static const _REPLACE_ALL_HISTORY_ACTION = 'REPLACE_ALL_HISTORY';
+  static const _DELETE_ALL_EMP_ACTION = 'DELETE_ALL_EMP';
+  static const _REPLACE_ALL_ITEMS_ACTION = 'REPLACE_ALL_ITEMS';
 
   // get items
   static Future<List<Item>> getItems(String tName) async {
@@ -59,7 +59,7 @@ static List<Item> parseResponse(String responseBody) {
   static Future<String> replaceTable(String tName) async{
     try {
       var map = Map<String, dynamic>();
-      map['action'] = _REPLACE_ALL_HOME_ACTION;
+      map['action'] = _REPLACE_ALL_ITEMS_ACTION;
       map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);
@@ -112,6 +112,20 @@ static List<Item> parseResponse(String responseBody) {
       var map = Map<String, dynamic>();
       map['action'] = _DELETE_EMP_ACTION;
       map['emp_id'] = empId;
+      map['tName'] = tName;
+      final Uri url = Uri.parse(ROOT);
+      final response = await http.post(url, body: map);
+     print('delete table response : ${response.body}');
+      return response.body;
+    } catch (e) {
+      return "error";
+    }
+  }
+
+  static Future<String> deleteAllItems(String tName) async {
+    try {
+      var map = Map<String, dynamic>();
+      map['action'] = _DELETE_ALL_EMP_ACTION;
       map['tName'] = tName;
       final Uri url = Uri.parse(ROOT);
       final response = await http.post(url, body: map);

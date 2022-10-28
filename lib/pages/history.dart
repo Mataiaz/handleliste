@@ -29,10 +29,12 @@ class _HistoryState extends State<History> {
 
   _getItems(tName) {
     Services.getItems(tName).then((items) {
-      if (items.isNotEmpty) {
+      if(items.isNotEmpty)
+      {
         _status = "";
-      } else {
-        _status = "So empty...";
+      }
+      else {
+        _status = "So empty..";
       }
       setState(() {
         _items = items;
@@ -42,6 +44,17 @@ class _HistoryState extends State<History> {
 
   _deleteItem(Item item) {
     Services.deleteItem(item.id, "History").then((result) {
+      if ('success' == result) {
+        _getItems("History");
+      }
+    });
+  }
+
+  _deleteAllItems(tName) {
+    Services.deleteAllItems(tName).then((result){
+      if ('success' == result) {
+        _getItems("History");
+      }
     });
   }
 
@@ -92,13 +105,13 @@ class _HistoryState extends State<History> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        title: const Center(child: Text("History            ")),
         leading: 
           IconButton(onPressed: () {
           Navigator.pushReplacementNamed(context, "/home");
-        }, icon: Icon(Icons.arrow_back)),
+        }, icon: const Icon(Icons.arrow_back)),
       ),
       body: SafeArea(
-        // query list will be here
         child: Column(
           children: [
             Expanded(
@@ -107,6 +120,12 @@ class _HistoryState extends State<History> {
                   _data(),
                 ],
               ),
+            ),
+            Center(
+              child: IconButton(onPressed: () {
+                _deleteAllItems("History");
+                _getItems("History");
+              }, icon: const Icon(Icons.dangerous), iconSize: 40, color: Colors.red),
             ),
           ],
         ),

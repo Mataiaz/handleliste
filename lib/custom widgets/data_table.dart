@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:handleliste/backend/items.dart';
 
 class QDataTable extends StatelessWidget {
 
