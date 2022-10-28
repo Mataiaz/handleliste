@@ -13,7 +13,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late List<Item> _items;
-  late Item _selectedItem;
   bool pressed = false;
   String _status = "No list";
   @override
@@ -75,15 +74,15 @@ class _HomeState extends State<Home> {
                       item.title.toUpperCase(),
                       textDirection: TextDirection.rtl,
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Text(
                       "                    " +
                           item.amount.toUpperCase() +
                           "stk",
-                      style: TextStyle(fontSize: 14),
+                      style: const TextStyle(fontSize: 14),
                     ),
                     IconButton(
-                        icon: Icon(Icons.check_circle_outline_outlined,
+                        icon: const Icon(Icons.check_circle_outline_outlined,
                             color: Colors.green),
                         onPressed: () async {
                           if (pressed == false) {

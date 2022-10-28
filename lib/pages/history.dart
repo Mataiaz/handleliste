@@ -67,14 +67,14 @@ class _HistoryState extends State<History> {
                     Text(
                       item.title.toUpperCase(),
                       textDirection: TextDirection.rtl,
-                      style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red),
+                      style: const TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Text(
                       "                    " +
                           item.amount.toUpperCase() +
                           "stk",
-                      style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red),
+                      style: const TextStyle(decoration: TextDecoration.lineThrough, color: Colors.red),
                     ),
                     MaterialButton(onPressed: () async {
                       if (pressed == false) {
@@ -82,7 +82,7 @@ class _HistoryState extends State<History> {
                             await _addItem(item, "Shop");
                             await _deleteItem(item);
                           }
-                    }, child: Text("Restore")),
+                    }, child: const Text("Restore")),
                   ],
                 ),
               ),

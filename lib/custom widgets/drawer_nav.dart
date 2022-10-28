@@ -20,18 +20,6 @@ class DrawerButtons extends StatelessWidget {
             ),
           ),
         ),
-        MyAnimatedDrawer(
-          cTime: 8,
-          child: SizedBox(
-            child: IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/settings');
-              },
-              color: Theme.of(context).secondaryHeaderColor,
-            ),
-          ),
-        ),
       ],
     );
   }
